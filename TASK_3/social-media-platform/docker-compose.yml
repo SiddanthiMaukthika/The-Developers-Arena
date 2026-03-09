@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+
+  service-discovery:
+    build: ./service-discovery
+    ports:
+      - "8761:8761"
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - service-discovery
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - service-discovery
+      - mysql
+
+  post-service:
+    build: ./post-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - service-discovery
+      - mysql
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - service-discovery
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3001:3000"
+    depends_on:
+      - api-gateway
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: socialmedia
+    ports:
+      - "3306:3306"
